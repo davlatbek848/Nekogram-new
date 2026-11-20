@@ -11460,6 +11460,10 @@ public class MessagesController extends BaseController implements NotificationCe
         if (threads.get(threadMsgId) != null) {
             return false;
         }
+        if (tw.nekomimi.nekogram.NekoConfig.ghostMode) {
+            return false;
+        }
+    
         if (!DialogObject.isEncryptedDialog(dialogId)) {
             TLRPC.TL_messages_setTyping req = new TLRPC.TL_messages_setTyping();
             if (threadMsgId != 0) {
@@ -14706,10 +14710,12 @@ public class MessagesController extends BaseController implements NotificationCe
         });
     }
 
-    public void markMentionsAsRead(long dialogId, long topicId) {
-        if (DialogObject.isEncryptedDialog(dialogId) || dialogId == getUserConfig().getClientUserId()) {
+    public void markDialogAsRead(long dialogId, int maxPositiveId, int maxNegativeId, int maxDate, boolean popup, long threadId, int countDiff, boolean readNow, int scheduledCount) {
+        if (tw.nekomimi.nekogram.NekoConfig.ghostMode && !readNow) {
             return;
         }
+        boolean createReadTask;
+
         getMessagesStorage().resetMentionsCount(dialogId, topicId, 0);
         TLRPC.TL_messages_readMentions req = new TLRPC.TL_messages_readMentions();
         req.peer = getInputPeer(dialogId);
