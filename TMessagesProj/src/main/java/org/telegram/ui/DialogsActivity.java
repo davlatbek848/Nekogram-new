@@ -5666,9 +5666,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             tabChats.setColorFilter(getThemedColor(Theme.key_chats_actionBackground));
             tabChats.setPadding(dp(12), dp(6), dp(12), dp(6));
             tabChats.setOnClickListener(v -> {
-                if (viewPages != null && viewPages.listView != null) {
-                    viewPages.listView.smoothScrollToPosition(0);
+                if (viewPages != null && viewPages.length > 0 && viewPages[0] != null && viewPages[0].listView != null) {
+                    viewPages[0].listView.smoothScrollToPosition(0);
                 }
+
             });
             floatingPill.addView(tabChats, LayoutHelper.createLinear(48, 40));
 
