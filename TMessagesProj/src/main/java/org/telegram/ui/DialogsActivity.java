@@ -3167,6 +3167,17 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         ActionBarMenu menu = actionBar.createMenu();
         menu.setTranslationX(-dp(5));
         searchItem = menu.addItem(0, R.drawable.outline_header_search).setIsSearchField(true, false);
+        searchItem.setVisibility(View.GONE);
+        ActionBarMenuItem newChatItem = menu.addItem(99, R.drawable.msg_edit);
+        newChatItem.setOnClickListener(v -> {
+            if (MessagesController.getInstance(currentAccount).isFrozen()) {
+                AccountFrozenAlert.show(currentAccount);
+                return;
+            }
+            openWriteContacts();
+        });
+
+
         searchItem.setOnClickListener(v -> {
             showSearch(true, false, true);
             fragmentSearchFieldWatcher.toggleSearch(true);
@@ -4716,9 +4727,11 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         floatingButtonStories.setContentDescription(LocaleController.getString(R.string.AddStory));
         floatingButtonStories.setOnClickListener(v -> openStoriesRecorder());
         contentView.addView(floatingButtonStories, FragmentFloatingButton.createSubButtonLayoutParams());
+        floatingButtonStories.setVisibility(View.GONE);
 
         floatingButton3 = new FragmentFloatingButton(context, resourceProvider);
         contentView.addView(floatingButton3, FragmentFloatingButton.createDefaultLayoutParams());
+        floatingButton3.setVisibility(View.GONE);
         floatingButton3.setOnClickListener(v -> {
             if (parentLayout != null && parentLayout.isInPreviewMode()) {
                 finishPreviewFragment();
@@ -5638,6 +5651,63 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
         glassEngine.setGlassInvalidationListener(this::invalidateBlurCaptures);
         glassEngine.setPositionsMerger(new GlassPositionsMerger(Float.POSITIVE_INFINITY, dp(48)));
+
+        if (!onlySelect && initialDialogsType == DIALOGS_TYPE_DEFAULT && !isArchive()) {
+            android.widget.LinearLayout floatingPill = new android.widget.LinearLayout(context);
+            floatingPill.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+            floatingPill.setGravity(Gravity.CENTER_VERTICAL);
+            floatingPill.setPadding(dp(14), dp(8), dp(14), dp(8));
+            int pillBg = androidx.core.graphics.ColorUtils.setAlphaComponent(getThemedColor(Theme.key_windowBackgroundWhite), 235);
+            floatingPill.setBackground(Theme.createRoundRectDrawable(dp(28), pillBg));
+            floatingPill.setElevation(dp(6));
+
+            ImageView tabChats = new ImageView(context);
+            tabChats.setImageResource(R.drawable.msg_message);
+            tabChats.setColorFilter(getThemedColor(Theme.key_chats_actionBackground));
+            tabChats.setPadding(dp(12), dp(6), dp(12), dp(6));
+            tabChats.setOnClickListener(v -> {
+                if (viewPages != null && viewPages.listView != null) {
+                    viewPages.listView.smoothScrollToPosition(0);
+                }
+            });
+            floatingPill.addView(tabChats, LayoutHelper.createLinear(48, 40));
+
+            ImageView tabContacts = new ImageView(context);
+            tabContacts.setImageResource(R.drawable.msg_contacts);
+            tabContacts.setColorFilter(getThemedColor(Theme.key_windowBackgroundWhiteGrayText));
+            tabContacts.setPadding(dp(12), dp(6), dp(12), dp(6));
+            tabContacts.setOnClickListener(v -> {
+                android.os.Bundle args = new android.os.Bundle();
+                args.putBoolean("destroyAfterSelect", true);
+                presentFragment(new ContactsActivity(args));
+            });
+            floatingPill.addView(tabContacts, LayoutHelper.createLinear(48, 40, 4, 0, 4, 0));
+
+            ImageView tabSettings = new ImageView(context);
+            tabSettings.setImageResource(R.drawable.msg_settings);
+            tabSettings.setColorFilter(getThemedColor(Theme.key_windowBackgroundWhiteGrayText));
+            tabSettings.setPadding(dp(12), dp(6), dp(12), dp(6));
+            tabSettings.setOnClickListener(v -> presentFragment(new ProfileActivity(null)));
+            floatingPill.addView(tabSettings, LayoutHelper.createLinear(48, 40));
+
+            contentView.addView(floatingPill, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 56, Gravity.LEFT | Gravity.BOTTOM, 16, 0, 0, 16));
+
+            ImageView floatingSearchBtn = new ImageView(context);
+            floatingSearchBtn.setImageResource(R.drawable.outline_header_search);
+            floatingSearchBtn.setColorFilter(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+            floatingSearchBtn.setScaleType(ImageView.ScaleType.CENTER);
+            floatingSearchBtn.setBackground(Theme.createCircleDrawable(dp(56), pillBg));
+            floatingSearchBtn.setElevation(dp(6));
+            floatingSearchBtn.setOnClickListener(v -> {
+                showSearch(true, false, true);
+                fragmentSearchFieldWatcher.toggleSearch(true);
+                AndroidUtilities.runOnUIThread(() -> {
+                    fragmentSearchField.editText.requestFocus();
+                    AndroidUtilities.showKeyboard(fragmentSearchField.editText);
+                }, 100);
+            });
+            contentView.addView(floatingSearchBtn, LayoutHelper.createFrame(56, 56, Gravity.RIGHT | Gravity.BOTTOM, 0, 0, 16, 16));
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(fragmentView, this::onApplyWindowInsets);
         return fragmentView;
@@ -8869,7 +8939,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     }
 
     private void updateFloatingButtonVisibility(boolean animated) {
-        final boolean isVisible = !(onlySelect && initialDialogsType != 10 || folderId != 0 || communityId != 0 || inPreviewMode || (searching && !onlySelect) || floatingButtonHidden);
+        final boolean isVisible = false;
 
         if (floatingButton3 != null) {
             floatingButton3.setButtonVisible(isVisible, animated);
