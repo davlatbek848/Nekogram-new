@@ -484,6 +484,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
 
         themeSwitchImageView = new ThemeRevealView(this);
         themeSwitchImageView.setVisibility(View.GONE);
+        final android.widget.LinearLayout dynamicIslandPill = new android.widget.LinearLayout(this);
+        final android.widget.TextView dynamicIslandTitle = new android.widget.TextView(this);
+        final ImageView dynamicIslandPlayBtn = new ImageView(this);
 
         drawerLayoutContainer = new DrawerLayoutContainer(this);
         drawerLayoutContainer.setActionBarLayout(actionBarLayout);
