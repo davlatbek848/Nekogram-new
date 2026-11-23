@@ -12195,7 +12195,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         super.requestLayout();
     }
 
-    
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (currentMessageObject != null && (currentMessageObject.checkLayout() || lastHeight != AndroidUtilities.displaySize.y)) {
@@ -12207,7 +12206,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         }
         updateSelectionTextPosition();
 
-        final int normHeight = starsPriceTopPadding + topicSeparatorTopPadding + suggestionOfferTopPadding + totalHeight + keyboardHeight + askBotForumBottomPadding + bottomActionPadding + dp(6);
+        final int normHeight = starsPriceTopPadding + topicSeparatorTopPadding + suggestionOfferTopPadding + totalHeight + keyboardHeight + askBotForumBottomPadding + bottomActionPadding;
         int resultHeight = normHeight;
         ChatActivityDraftMessageMeasureController botDraftHeightController = getDraftMessageMeasureController();
         if (botDraftHeightController != null) {
@@ -12221,7 +12220,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             resultHeight
         );
     }
-
 
     private int additionalPaddingHeight;
 
@@ -17760,8 +17758,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             } else {
                 currentBackgroundShadowDrawable = currentBackgroundDrawable.getShadowDrawable();
             }
-            // Beeper / AI Chat Feed uslubi: chiquvchi xabarlarni ham chap tarafga tekislash
-            backgroundDrawableLeft = dp(isSideMenuEnabled && !isCompactLayout() ? ChatActivity.SIDE_MENU_WIDTH : (isChat && isAvatarVisible ? 48 : 0)) + dp(!mediaBackground ? 3 : 9);
+            backgroundDrawableLeft = layoutWidth - backgroundWidth - (!mediaBackground ? 0 : dp(9));
             backgroundDrawableRight = backgroundWidth - (mediaBackground ? 0 : dp(3));
             if (currentMessagesGroup != null && !currentMessagesGroup.isDocuments) {
                 if (!currentPosition.edge) {
@@ -17801,7 +17798,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             } else {
                 offsetBottom = dp(2);
             }
-
             backgroundDrawableTop = additionalTop + (drawPinnedTop ? 0 : dp(1));
             int backgroundHeight = layoutHeight - offsetBottom + additionalBottom;
             backgroundDrawableBottom = backgroundDrawableTop + backgroundHeight;

@@ -768,87 +768,55 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
         glassMode = true;
     }
 
-       private android.graphics.Paint pillBgPaint;
-    private android.graphics.RectF pillRect = new android.graphics.RectF();
-
-    @Override
-    protected void dispatchDraw(android.graphics.Canvas canvas) {
-        if (titleTextView != null && titleTextView.getVisibility() == VISIBLE) {
-            if (pillBgPaint == null) {
-                pillBgPaint = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
-            }
-            pillBgPaint.setColor(Theme.isCurrentThemeNight() ? 0x33FFFFFF : 0x22000000);
-
-            int titleW = titleTextView.getTextWidth();
-            int subW = 0;
-            if (subtitleTextView != null && subtitleTextView.getVisibility() == VISIBLE) {
-                subW = subtitleTextView.getTextWidth();
-            } else if (animatedSubtitleTextView != null && animatedSubtitleTextView.getVisibility() == VISIBLE) {
-                subW = animatedSubtitleTextView.getTextWidth();
-            }
-            int contentWidth = Math.max(titleW, subW);
-            int padH = dp(16);
-            int pillWidth = contentWidth + padH * 2;
-            int centerX = getMeasuredWidth() / 2;
-
-            final int actionBarHeight = ActionBar.getCurrentActionBarHeight();
-            final int viewTop = (actionBarHeight - avatarImageView.getMeasuredHeight() - 2) / 2 + (occupyStatusBar ? AndroidUtilities.statusBarHeight : 0);
-
-            pillRect.set(
-                centerX - pillWidth / 2f,
-                viewTop - dp(2),
-                centerX + pillWidth / 2f,
-                viewTop + avatarImageView.getMeasuredHeight() + dp(2)
-            );
-            float radius = pillRect.height() / 2f;
-            canvas.drawRoundRect(pillRect, radius, radius, pillBgPaint);
-        }
-        super.dispatchDraw(canvas);
-    }
-
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        final int width = right - left;
         final int actionBarHeight = ActionBar.getCurrentActionBarHeight();
         final int viewTop = (actionBarHeight - avatarImageView.getMeasuredHeight() - 2) / 2 + (occupyStatusBar ? AndroidUtilities.statusBarHeight : 0);
-        final int subtitleTop = viewTop + dp(23);
+        final int subtitleTop = viewTop + dp(glassMode ? 23.66f : 24);
 
-        // 1. Avatarni eng o'ng chetga joylashtirish
-        int avatarRight = width - dp(10);
-        int avatarLeft = avatarRight - avatarImageView.getMeasuredWidth();
-        avatarImageView.layout(avatarLeft, 1 + viewTop, avatarRight, 1 + viewTop + avatarImageView.getMeasuredHeight());
-
-        // 2. Ism va statusni markazga tekislash
-        int titleW = titleTextView.getTextWidth();
-        int titleL = (width - titleW) / 2;
-
+        avatarImageView.layout(1 + leftPadding, 1 + viewTop, 1 + leftPadding + avatarImageView.getMeasuredWidth(), 1 + viewTop + avatarImageView.getMeasuredHeight());
+        int l = leftPadding + (avatarImageView.getVisibility() == VISIBLE ? dp(glassMode ? 49.66f : 55) : dp(glassMode ? 13 : 1)) + rightAvatarPadding;
         SimpleTextView titleTextLargerCopyView = this.titleTextLargerCopyView.get();
         if (getSubtitleTextView().getVisibility() != GONE) {
-            titleTextView.layout(titleL, viewTop + dp(1.66f) - titleTextView.getPaddingTop(), titleL + titleTextView.getMeasuredWidth(), viewTop + titleTextView.getTextHeight() + dp(1.66f) - titleTextView.getPaddingTop() + titleTextView.getPaddingBottom());
+            titleTextView.layout(l, viewTop + dp(1.66f) - titleTextView.getPaddingTop(), l + titleTextView.getMeasuredWidth(), viewTop + titleTextView.getTextHeight() + dp(1.66f) - titleTextView.getPaddingTop() + titleTextView.getPaddingBottom());
             if (titleTextLargerCopyView != null) {
-                titleTextLargerCopyView.layout(titleL, viewTop + dp(1.66f), titleL + titleTextLargerCopyView.getMeasuredWidth(), viewTop + titleTextLargerCopyView.getTextHeight() + dp(1.66f));
+                titleTextLargerCopyView.layout(l, viewTop + dp(1.66f), l + titleTextLargerCopyView.getMeasuredWidth(), viewTop + titleTextLargerCopyView.getTextHeight() + dp(1.66f));
             }
         } else {
-            titleTextView.layout(titleL, viewTop + dp(11) - titleTextView.getPaddingTop(), titleL + titleTextView.getMeasuredWidth(), viewTop + titleTextView.getTextHeight() + dp(11) - titleTextView.getPaddingTop() + titleTextView.getPaddingBottom());
+            titleTextView.layout(l, viewTop + dp(11) - titleTextView.getPaddingTop(), l + titleTextView.getMeasuredWidth(), viewTop + titleTextView.getTextHeight() + dp(11) - titleTextView.getPaddingTop() + titleTextView.getPaddingBottom());
             if (titleTextLargerCopyView != null) {
-                titleTextLargerCopyView.layout(titleL, viewTop + dp(10), titleL + titleTextLargerCopyView.getMeasuredWidth(), viewTop + titleTextLargerCopyView.getTextHeight() + dp(10));
+                titleTextLargerCopyView.layout(l, viewTop + dp(10), l + titleTextLargerCopyView.getMeasuredWidth(), viewTop + titleTextLargerCopyView.getTextHeight() + dp(10));
             }
         }
-
+        if (communityItem != null) {
+            communityItem.layout(
+                leftPadding + dp(29f),
+                viewTop + dp(27.33f),
+                leftPadding + dp(29f) + communityItem.getMeasuredWidth(),
+                viewTop + dp(27.33f) + communityItem.getMeasuredHeight());
+        }
+        if (timeItem != null) {
+            timeItem.layout(
+                leftPadding + dp(19.333f),
+                viewTop - dp(8),
+                leftPadding + dp(19.333f) + timeItem.getMeasuredWidth(),
+                viewTop - dp(8) + timeItem.getMeasuredHeight()
+            );
+        }
+        if (starBgItem != null) {
+            starBgItem.layout(leftPadding + dp(28), viewTop + dp(24), leftPadding + dp(28) + starBgItem.getMeasuredWidth(), viewTop + dp(24) + starBgItem.getMeasuredHeight());
+        }
+        if (starFgItem != null) {
+            starFgItem.layout(leftPadding + dp(28), viewTop + dp(24), leftPadding + dp(28) + starFgItem.getMeasuredWidth(), viewTop + dp(24) + starFgItem.getMeasuredHeight());
+        }
         if (subtitleTextView != null) {
-            int subW = subtitleTextView.getTextWidth();
-            int subL = (width - subW) / 2;
-            subtitleTextView.layout(subL, subtitleTop, subL + subtitleTextView.getMeasuredWidth(), subtitleTop + subtitleTextView.getTextHeight());
+            subtitleTextView.layout(l, subtitleTop, l + subtitleTextView.getMeasuredWidth(), subtitleTop + subtitleTextView.getTextHeight());
         } else if (animatedSubtitleTextView != null) {
-            int subW = animatedSubtitleTextView.getTextWidth();
-            int subL = (width - subW) / 2;
-            animatedSubtitleTextView.layout(subL, subtitleTop, subL + animatedSubtitleTextView.getMeasuredWidth(), subtitleTop + animatedSubtitleTextView.getTextHeight());
+            animatedSubtitleTextView.layout(l, subtitleTop, l + animatedSubtitleTextView.getMeasuredWidth(), subtitleTop + animatedSubtitleTextView.getTextHeight());
         }
         SimpleTextView subtitleTextLargerCopyView = this.subtitleTextLargerCopyView.get();
         if (subtitleTextLargerCopyView != null) {
-            int subW = subtitleTextLargerCopyView.getTextWidth();
-            int subL = (width - subW) / 2;
-            subtitleTextLargerCopyView.layout(subL, subtitleTop, subL + subtitleTextLargerCopyView.getMeasuredWidth(), subtitleTop + subtitleTextLargerCopyView.getTextHeight());
+            subtitleTextLargerCopyView.layout(l, subtitleTop, l + subtitleTextLargerCopyView.getMeasuredWidth(), subtitleTop + subtitleTextLargerCopyView.getTextHeight());
         }
     }
 

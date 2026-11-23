@@ -4361,13 +4361,9 @@ public class ChatActivity extends BaseFragment implements
             });
             getConnectionsManager().bindRequestToGuid(req, classGuid);
         } else {
-            actionBar.addView(avatarContainer, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.LEFT, 0, 0, 0, 0));
-            if (actionBar.getBackButton() != null) {
-                actionBar.getBackButton().bringToFront();
-            }
+            actionBar.addView(avatarContainer, 0, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.LEFT, !inPreviewMode ? 52 : 0, 0, 52, 0));
             actionBar.createMenu().bringToFront();
         }
-
         actionBar.setOnActionModeFactorChangeListener(() -> {
             checkUi_avatarContainerVisibility();
         });

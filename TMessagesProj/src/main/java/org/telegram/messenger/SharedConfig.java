@@ -320,7 +320,7 @@ public class SharedConfig {
     public static boolean useSystemBoldFont;
     public static int fontSize = 16;
     public static boolean fontSizeIsDefault;
-    public static int bubbleRadius = 20;
+    public static int bubbleRadius = 17;
     public static int ivFontSize = 16;
     public static boolean proxyRotationEnabled;
     public static int proxyRotationTimeout;

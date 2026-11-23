@@ -4,8 +4,7 @@ plugins {
     id 'com.android.application'
     id 'androidx.baselineprofile'
     id 'org.telegram.build-app-plugin'
-    // Google Play uchun google-services.json qo'shganda pastdagi qatorni izohdan chiqaring:
-    // id 'com.google.gms.google-services'
+    id 'com.google.gms.google-services'
     id 'io.sentry.android.gradle'
 }
 
@@ -16,12 +15,13 @@ dependencies {
 }
 
 sentry {
-    uploadNativeSymbols = false
-    includeSourceContext = false
+    uploadNativeSymbols = true
+    includeSourceContext = true
+    additionalSourceDirsForSourceContext = [ '../TMessagesProj/src/main/java' ]
     autoInstallation {
         enabled = false
     }
-    ignoredBuildTypes = ["debug", "release"]
+    ignoredBuildTypes = ["debug"]
 }
 
 android {
@@ -88,7 +88,7 @@ android {
 
         multiDexEnabled true
 
-        manifestPlaceholders = [MAPS_API_KEY: localProperties.get("mapsApiKey") ?: ""]
+        manifestPlaceholders = [MAPS_API_KEY: localProperties.get("mapsApiKey")]
     }
 
     splits.abi {
@@ -113,7 +113,7 @@ androidComponents {
             def abi = output.filters.find { it.filterType == FilterConfiguration.FilterType.ABI }?.identifier
             def abiName = abi ?: "universal"
             def baseVersionCode = output.versionCode.get()
-            output.outputFileName.set("NekoAI-${output.versionName.get()}-${baseVersionCode}-${abiName}.apk")
+            output.outputFileName.set("Nekogram-${output.versionName.get()}-${baseVersionCode}-${abiName}.apk")
             output.versionCode.set(baseVersionCode * 10)
         }
     }
