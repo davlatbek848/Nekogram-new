@@ -26,6 +26,8 @@ import tw.nekomimi.nekogram.translator.deepl.DeepLOAuth;
 public class NekoGeneralSettingsActivity extends BaseNekoSettingsActivity {
 
     private final int ipv6Row = rowId++;
+    private final int ghostModeRow = rowId++;
+
 
     private final int showOriginalRow = rowId++;
     private final int translatorTypeRow = rowId++;
@@ -129,6 +131,7 @@ public class NekoGeneralSettingsActivity extends BaseNekoSettingsActivity {
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         items.add(UItem.asHeader(LocaleController.getString(R.string.Connection)));
         items.add(UItem.asCheck(ipv6Row, LocaleController.getString(R.string.PreferIPv6)).slug("ipv6").setChecked(NekoConfig.preferIPv6));
+        items.add(UItem.asCheck(ghostModeRow, "Ghost Mode", "Stay invisible while reading and typing").slug("ghostMode").setChecked(NekoConfig.ghostMode));
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(LocaleController.getString(R.string.Translator)));
@@ -194,6 +197,11 @@ public class NekoGeneralSettingsActivity extends BaseNekoSettingsActivity {
                 if (UserConfig.getInstance(a).isClientActivated()) {
                     ConnectionsManager.getInstance(a).checkConnection();
                 }
+            }
+        } else if (id == ghostModeRow) {
+            NekoConfig.toggleGhostMode();
+            if (view instanceof TextCheckCell) {
+                ((TextCheckCell) view).setChecked(NekoConfig.ghostMode);
             }
         } else if (id == disabledInstantCameraRow) {
             NekoConfig.toggleDisableInstantCamera();

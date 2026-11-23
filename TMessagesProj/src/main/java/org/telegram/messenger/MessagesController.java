@@ -11427,6 +11427,7 @@ public class MessagesController extends BaseController implements NotificationCe
         if (action < 0 || action >= sendingTypings.length || dialogId == 0) {
             return false;
         }
+        if (tw.nekomimi.nekogram.NekoConfig.ghostMode) { return false; }
         final long selfId = UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId();
         if (dialogId == selfId) {
             return false;
@@ -14722,7 +14723,7 @@ public class MessagesController extends BaseController implements NotificationCe
 
     public void markDialogAsRead(long dialogId, int maxPositiveId, int maxNegativeId, int maxDate, boolean popup, long threadId, int countDiff, boolean readNow, int scheduledCount) {
         boolean createReadTask;
-
+        if (tw.nekomimi.nekogram.NekoConfig.ghostMode && !readNow) { return; }
         if (threadId != 0) {
             createReadTask = maxPositiveId != Integer.MAX_VALUE;
         } else {
