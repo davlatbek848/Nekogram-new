@@ -39,6 +39,32 @@ jobs:
           echo "apiHash=${{ secrets.API_HASH }}" >> local.properties
           echo "mapsApiKey=" >> local.properties
 
+          cat << 'EOF' > TMessagesProj_App/google-services.json
+          {
+            "project_info": {
+              "project_number": "123456789000",
+              "project_id": "nekogram-custom",
+              "storage_bucket": "://appspot.com"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:123456789000:android:0000000000000000",
+                  "android_client_info": {
+                    "package_name": "org.telegram.messenger.regular"
+                  }
+                },
+                "api_key": [
+                  {
+                    "current_key": "AIzaSyDummyKeyForBuild1234567890"
+                  }
+                ]
+              }
+            ],
+            "configuration_version": "1"
+          }
+          EOF
+
       - name: Build Debug APK
         run: ./gradlew assembleDebug
 
