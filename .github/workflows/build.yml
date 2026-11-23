@@ -37,6 +37,7 @@ jobs:
           
           echo "apiId=${{ secrets.API_ID }}" >> local.properties
           echo "apiHash=${{ secrets.API_HASH }}" >> local.properties
+          echo "mapsApiKey=" >> local.properties
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug
