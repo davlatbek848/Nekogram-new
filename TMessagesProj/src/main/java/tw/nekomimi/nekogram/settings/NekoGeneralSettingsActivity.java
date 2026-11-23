@@ -27,7 +27,7 @@ public class NekoGeneralSettingsActivity extends BaseNekoSettingsActivity {
 
     private final int ipv6Row = rowId++;
     private final int ghostModeRow = rowId++;
-
+    private final int antiDeleteRow = rowId++;
 
     private final int showOriginalRow = rowId++;
     private final int translatorTypeRow = rowId++;
@@ -132,6 +132,7 @@ public class NekoGeneralSettingsActivity extends BaseNekoSettingsActivity {
         items.add(UItem.asHeader(LocaleController.getString(R.string.Connection)));
         items.add(UItem.asCheck(ipv6Row, LocaleController.getString(R.string.PreferIPv6)).slug("ipv6").setChecked(NekoConfig.preferIPv6));
         items.add(UItem.asCheck(ghostModeRow, "Ghost Mode", "Stay invisible while reading and typing").slug("ghostMode").setChecked(NekoConfig.ghostMode));
+        items.add(UItem.asCheck(antiDeleteRow, "Anti-Delete", "Prevent others from deleting messages for you").slug("antiDelete").setChecked(NekoConfig.antiDelete));
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(LocaleController.getString(R.string.Translator)));
@@ -202,6 +203,11 @@ public class NekoGeneralSettingsActivity extends BaseNekoSettingsActivity {
             NekoConfig.toggleGhostMode();
             if (view instanceof TextCheckCell) {
                 ((TextCheckCell) view).setChecked(NekoConfig.ghostMode);
+            }
+        } else if (id == antiDeleteRow) {
+            NekoConfig.toggleAntiDelete();
+            if (view instanceof TextCheckCell) {
+                ((TextCheckCell) view).setChecked(NekoConfig.antiDelete);
             }
         } else if (id == disabledInstantCameraRow) {
             NekoConfig.toggleDisableInstantCamera();

@@ -96,6 +96,7 @@ public class NekoConfig {
     public static boolean formatTimeWithSeconds = false;
     public static boolean gooeyAvatarAnimation = true;
     public static boolean ghostMode = false;
+    public static boolean antiDelete = false;
     public static boolean hideAllTab = false;
     public static boolean hideBottomNavigationBar = false;
     public static boolean hideChannelBottomButtons = false;
@@ -202,6 +203,7 @@ public class NekoConfig {
             forceHttpStreaming = preferences.getBoolean("forceHttpStreaming", false);
             formatTimeWithSeconds = preferences.getBoolean("formatTimeWithSeconds", false);
             gooeyAvatarAnimation = preferences.getBoolean("gooeyAvatarAnimation", true);
+            antiDelete = preferences.getBoolean("antiDelete", false);
             ghostMode = preferences.getBoolean("ghostMode", false);
             hideAllTab = preferences.getBoolean("hideAllTab", false);
             hideBottomNavigationBar = preferences.getBoolean("hideBottomNavigationBar", false);
@@ -928,6 +930,12 @@ public class NekoConfig {
     }
 
     public static void toggleGhostMode()
+
+    public static void toggleAntiDelete() {
+        antiDelete = !antiDelete;
+        preferences.edit().putBoolean("antiDelete", antiDelete).apply();
+    }
+
 
     public static void toggleHideAllTab() {
         hideAllTab = !hideAllTab;
