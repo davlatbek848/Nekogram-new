@@ -417,14 +417,43 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
         bounce.setPressed(pressed);
     }
 
+        private final android.graphics.Paint pillPaint = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+    private final android.graphics.RectF pillRect = new android.graphics.RectF();
+
     @Override
     protected void dispatchDraw(Canvas canvas) {
         canvas.save();
         final float s = bounce.getScale(.02f);
         canvas.scale(s, s, getPivotX(), getHeight() - ActionBar.getCurrentActionBarHeight() / 2f);
+
+        // iOS Pill (kapsula) fon chizish
+        if (titleTextView != null && titleTextView.getVisibility() == VISIBLE) {
+            float textW = titleTextView.getExactWidthIncludeDrawables();
+            if (subtitleTextView != null && subtitleTextView.getVisibility() == VISIBLE) {
+                textW = Math.max(textW, subtitleTextView.getExactWidthIncludeDrawables());
+            } else if (animatedSubtitleTextView != null && animatedSubtitleTextView.getVisibility() == VISIBLE) {
+                textW = Math.max(textW, animatedSubtitleTextView.getCurrentWidth());
+            }
+            if (textW > 0) {
+                float centerX = titleTextView.getX() + titleTextView.getMeasuredWidth() / 2f;
+                float padX = dp(14);
+                float halfW = Math.min(textW / 2f + padX, getWidth() / 2f - dp(48));
+                float topY = titleTextView.getTop() - dp(3);
+                float bottomY = (subtitleTextView != null && subtitleTextView.getVisibility() == VISIBLE)
+                        ? subtitleTextView.getBottom() + dp(3)
+                        : titleTextView.getBottom() + dp(3);
+                pillRect.set(centerX - halfW, topY, centerX + halfW, bottomY);
+                int bgColor = getThemedColor(Theme.key_actionBarDefaultTitle);
+                pillPaint.setColor(androidx.core.graphics.ColorUtils.setAlphaComponent(bgColor, 22));
+                float radius = pillRect.height() / 2f;
+                canvas.drawRoundRect(pillRect, radius, radius, pillPaint);
+            }
+        }
+
         super.dispatchDraw(canvas);
         canvas.restore();
     }
+
 
     @Override
     protected boolean drawChild(@NonNull Canvas canvas, View child, long drawingTime) {
@@ -768,65 +797,83 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
         glassMode = true;
     }
 
-    @Override
+       @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         final int actionBarHeight = ActionBar.getCurrentActionBarHeight();
         final int viewTop = (actionBarHeight - avatarImageView.getMeasuredHeight() - 2) / 2 + (occupyStatusBar ? AndroidUtilities.statusBarHeight : 0);
         final int subtitleTop = viewTop + dp(glassMode ? 23.66f : 24);
+        final int width = right - left;
 
-        avatarImageView.layout(1 + leftPadding, 1 + viewTop, 1 + leftPadding + avatarImageView.getMeasuredWidth(), 1 + viewTop + avatarImageView.getMeasuredHeight());
-        int l = leftPadding + (avatarImageView.getVisibility() == VISIBLE ? dp(glassMode ? 49.66f : 55) : dp(glassMode ? 13 : 1)) + rightAvatarPadding;
+        // 1. Avatarni O'NG tomonga joylashtirish
+        int avatarRight = width - dp(8);
+        int avatarLeft = avatarRight - avatarImageView.getMeasuredWidth();
+        if (avatarImageView.getVisibility() == VISIBLE) {
+            avatarImageView.layout(avatarLeft, 1 + viewTop, avatarRight, 1 + viewTop + avatarImageView.getMeasuredHeight());
+        }
+
+        // 2. Sarlavhani O'RTAGA joylashtirish (Chapda back tugmasi, o'ngda avatar joyini hisobga olgan holda)
+        int centerAreaLeft = leftPadding;
+        int centerAreaRight = (avatarImageView.getVisibility() == VISIBLE) ? avatarLeft - dp(8) : width - dp(8);
+        int centerAreaWidth = Math.max(0, centerAreaRight - centerAreaLeft);
+
+        int titleW = titleTextView.getMeasuredWidth();
+        int l = centerAreaLeft + Math.max(0, (centerAreaWidth - titleW) / 2);
+
         SimpleTextView titleTextLargerCopyView = this.titleTextLargerCopyView.get();
         if (getSubtitleTextView().getVisibility() != GONE) {
-            titleTextView.layout(l, viewTop + dp(1.66f) - titleTextView.getPaddingTop(), l + titleTextView.getMeasuredWidth(), viewTop + titleTextView.getTextHeight() + dp(1.66f) - titleTextView.getPaddingTop() + titleTextView.getPaddingBottom());
+            titleTextView.layout(l, viewTop + dp(1.66f) - titleTextView.getPaddingTop(), l + titleW, viewTop + titleTextView.getTextHeight() + dp(1.66f) - titleTextView.getPaddingTop() + titleTextView.getPaddingBottom());
             if (titleTextLargerCopyView != null) {
                 titleTextLargerCopyView.layout(l, viewTop + dp(1.66f), l + titleTextLargerCopyView.getMeasuredWidth(), viewTop + titleTextLargerCopyView.getTextHeight() + dp(1.66f));
             }
         } else {
-            titleTextView.layout(l, viewTop + dp(11) - titleTextView.getPaddingTop(), l + titleTextView.getMeasuredWidth(), viewTop + titleTextView.getTextHeight() + dp(11) - titleTextView.getPaddingTop() + titleTextView.getPaddingBottom());
+            titleTextView.layout(l, viewTop + dp(11) - titleTextView.getPaddingTop(), l + titleW, viewTop + titleTextView.getTextHeight() + dp(11) - titleTextView.getPaddingTop() + titleTextView.getPaddingBottom());
             if (titleTextLargerCopyView != null) {
                 titleTextLargerCopyView.layout(l, viewTop + dp(10), l + titleTextLargerCopyView.getMeasuredWidth(), viewTop + titleTextLargerCopyView.getTextHeight() + dp(10));
             }
         }
+
+        // Qo'shimcha belgilarni (community, star, time) o'ngdagi avatarga moslash
         if (communityItem != null) {
             communityItem.layout(
-                leftPadding + dp(29f),
+                avatarLeft + dp(28f),
                 viewTop + dp(27.33f),
-                leftPadding + dp(29f) + communityItem.getMeasuredWidth(),
-                viewTop + dp(27.33f) + communityItem.getMeasuredHeight());
+                avatarLeft + dp(28f) + communityItem.getMeasuredWidth(),
+                viewTop + dp(27.33f) + communityItem.getMeasuredHeight()
+            );
         }
         if (timeItem != null) {
             timeItem.layout(
-                leftPadding + dp(19.333f),
+                avatarLeft + dp(18.333f),
                 viewTop - dp(8),
-                leftPadding + dp(19.333f) + timeItem.getMeasuredWidth(),
+                avatarLeft + dp(18.333f) + timeItem.getMeasuredWidth(),
                 viewTop - dp(8) + timeItem.getMeasuredHeight()
             );
         }
         if (starBgItem != null) {
-            starBgItem.layout(leftPadding + dp(28), viewTop + dp(24), leftPadding + dp(28) + starBgItem.getMeasuredWidth(), viewTop + dp(24) + starBgItem.getMeasuredHeight());
+            starBgItem.layout(avatarLeft + dp(27), viewTop + dp(24), avatarLeft + dp(27) + starBgItem.getMeasuredWidth(), viewTop + dp(24) + starBgItem.getMeasuredHeight());
         }
         if (starFgItem != null) {
-            starFgItem.layout(leftPadding + dp(28), viewTop + dp(24), leftPadding + dp(28) + starFgItem.getMeasuredWidth(), viewTop + dp(24) + starFgItem.getMeasuredHeight());
+            starFgItem.layout(avatarLeft + dp(27), viewTop + dp(24), avatarLeft + dp(27) + starFgItem.getMeasuredWidth(), viewTop + dp(24) + starFgItem.getMeasuredHeight());
         }
+
+        // 3. Subtitle (online/obunachi) ni ham O'RTAGA joylashtirish
         if (subtitleTextView != null) {
-            subtitleTextView.layout(l, subtitleTop, l + subtitleTextView.getMeasuredWidth(), subtitleTop + subtitleTextView.getTextHeight());
+            int subW = subtitleTextView.getMeasuredWidth();
+            int subL = centerAreaLeft + Math.max(0, (centerAreaWidth - subW) / 2);
+            subtitleTextView.layout(subL, subtitleTop, subL + subW, subtitleTop + subtitleTextView.getTextHeight());
         } else if (animatedSubtitleTextView != null) {
-            animatedSubtitleTextView.layout(l, subtitleTop, l + animatedSubtitleTextView.getMeasuredWidth(), subtitleTop + animatedSubtitleTextView.getTextHeight());
+            int subW = animatedSubtitleTextView.getMeasuredWidth();
+            int subL = centerAreaLeft + Math.max(0, (centerAreaWidth - subW) / 2);
+            animatedSubtitleTextView.layout(subL, subtitleTop, subL + subW, subtitleTop + animatedSubtitleTextView.getTextHeight());
         }
         SimpleTextView subtitleTextLargerCopyView = this.subtitleTextLargerCopyView.get();
         if (subtitleTextLargerCopyView != null) {
-            subtitleTextLargerCopyView.layout(l, subtitleTop, l + subtitleTextLargerCopyView.getMeasuredWidth(), subtitleTop + subtitleTextLargerCopyView.getTextHeight());
+            int subW = subtitleTextLargerCopyView.getMeasuredWidth();
+            int subL = centerAreaLeft + Math.max(0, (centerAreaWidth - subW) / 2);
+            subtitleTextLargerCopyView.layout(subL, subtitleTop, subL + subW, subtitleTop + subtitleTextLargerCopyView.getTextHeight());
         }
     }
 
-    public void setLeftPadding(int value) {
-        leftPadding = value;
-    }
-
-    public int getLeftPadding() {
-        return leftPadding;
-    }
 
     public void setRightAvatarPadding(int value) {
         rightAvatarPadding = value;
