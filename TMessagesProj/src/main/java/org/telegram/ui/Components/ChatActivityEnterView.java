@@ -2756,8 +2756,9 @@ public class ChatActivityEnterView extends FrameLayout implements
         };
         textFieldContainer.setClipChildren(false);
         textFieldContainer.setClipToPadding(false);
-        textFieldContainer.setPadding(0, dp(1), 0, 0);
-        addView(textFieldContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 0, 1, 0, 0));
+        textFieldContainer.setBackground(Theme.createRoundRectDrawable(dp(24), getThemedColor(Theme.key_chat_messagePanelBackground)));
+        addView(textFieldContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 8, 2, 8, 8));
+
 
         FrameLayout frameLayout = messageEditTextContainer = new FrameLayout(context) {
             @Override
