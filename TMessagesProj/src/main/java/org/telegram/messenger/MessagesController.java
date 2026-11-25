@@ -19434,7 +19434,7 @@ public class MessagesController extends BaseController implements NotificationCe
                     value = getMessagesStorage().getDialogReadMax(true, dialogId);
                 }
                 dialogs_read_outbox_max.put(dialogId, Math.max(value, update.max_id));
-            } } else if (baseUpdate instanceof TL_update.TL_updateDeleteChannelMessages) {
+            } else if (baseUpdate instanceof TL_update.TL_updateDeleteChannelMessages) {
                   if (!tw.nekomimi.nekogram.NekoConfig.antiDelete) {
                       TL_update.TL_updateDeleteChannelMessages update = (TL_update.TL_updateDeleteChannelMessages) baseUpdate;
                   if (BuildVars.LOGS_ENABLED) {

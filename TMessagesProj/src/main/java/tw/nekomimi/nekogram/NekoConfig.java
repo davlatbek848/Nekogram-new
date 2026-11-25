@@ -924,17 +924,21 @@ public class NekoConfig {
         preferences.edit().putBoolean("formatTimeWithSeconds", formatTimeWithSeconds).apply();
     }
 
-    public static void toggleGooeyAvatarAnimation() {
+        public static void toggleGooeyAvatarAnimation() {
         gooeyAvatarAnimation = !gooeyAvatarAnimation;
         preferences.edit().putBoolean("gooeyAvatarAnimation", gooeyAvatarAnimation).apply();
     }
 
-    public static void toggleGhostMode()
+    public static void toggleGhostMode() {
+        ghostMode = !ghostMode;
+        preferences.edit().putBoolean("ghostMode", ghostMode).apply();
+    }
 
     public static void toggleAntiDelete() {
         antiDelete = !antiDelete;
         preferences.edit().putBoolean("antiDelete", antiDelete).apply();
     }
+
 
 
     public static void toggleHideAllTab() {
